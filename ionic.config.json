@@ -1,0 +1,7 @@
+{
+  "name": "immobilisation",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
