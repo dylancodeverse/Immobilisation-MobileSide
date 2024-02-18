@@ -33,6 +33,10 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Assignation from './components/assignationForm/Assignation';
+import Acquisition from './components/acquisitionForm/Acquisition';
+import Composants from './components/composantsForm/Composants';
+
 
 setupIonicReact();
 
@@ -52,6 +56,15 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/">
             <Redirect to="/tab1" />
+          </Route>
+          <Route path="/assignation">
+            <Assignation />
+          </Route>
+          <Route path="/acquisition">
+            <Acquisition />
+          </Route>
+          <Route path="/composants">
+            <Composants/>
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom" className='navtab'>
