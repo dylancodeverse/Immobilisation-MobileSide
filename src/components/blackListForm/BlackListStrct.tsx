@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/react';
 import theme from './imgs/manipulation-bro.svg';
 import '../constants/font.css';
 import '../constants/form.css';
 import './override.css'
 import { useHistory } from 'react-router';
+import { fetchGrpUsers, fetchUsers } from '../../utils/API';
 
 const BlackListStrict: React.FC = () => {
     const history = useHistory();
@@ -12,6 +13,19 @@ const BlackListStrict: React.FC = () => {
         user: '',
         isGrp: true
     });
+    const [users, setUsers] = useState([]);
+    const [groups, setGroups] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const usersData = await fetchUsers();
+            const groupsData = await fetchGrpUsers();
+            setUsers(usersData);
+            setGroups(groupsData);
+        };
+    
+        fetchData();
+    }, []);
 
     const handleUserChange = (user: string) => {
         setFormData({ user: user, isGrp: false });
@@ -25,7 +39,6 @@ const BlackListStrict: React.FC = () => {
         // Envoyer les données du formulaire
         console.log(formData);
         // Rediriger vers une autre page si nécessaire
-        history.push('/autre-page');
     };
 
     return (
@@ -46,19 +59,17 @@ const BlackListStrict: React.FC = () => {
                     <IonItem>
                         <IonLabel position="stacked">Utilisateur</IonLabel>
                         <IonSelect value={formData.user} onIonChange={(e) => handleUserChange(e.detail.value)}>
-                            {/* Mettez vos options utilisateur ici */}
-                            <IonSelectOption value="user1">Utilisateur 1</IonSelectOption>
-                            <IonSelectOption value="user2">Utilisateur 2</IonSelectOption>
-                            <IonSelectOption value="user3">Utilisateur 3</IonSelectOption>
+                            {users.map((user: any) => (
+                                <IonSelectOption key={user} value={user}>{user}</IonSelectOption>
+                            ))}
                         </IonSelect>
                     </IonItem>
                     <IonItem>
                         <IonLabel position="stacked">Groupe</IonLabel>
                         <IonSelect value={formData.user} onIonChange={(e) => handleGrpChange(e.detail.value)}>
-                            {/* Mettez vos options groupe ici */}
-                            <IonSelectOption value="grp1">Groupe 1</IonSelectOption>
-                            <IonSelectOption value="grp2">Groupe 2</IonSelectOption>
-                            <IonSelectOption value="grp3">Groupe 3</IonSelectOption>
+                            {groups.map((group: any) => (
+                                <IonSelectOption key={group} value={group}>{group}</IonSelectOption>
+                            ))}
                         </IonSelect>
                     </IonItem>
                     <div className="btn">

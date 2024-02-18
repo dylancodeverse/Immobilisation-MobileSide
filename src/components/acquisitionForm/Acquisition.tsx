@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonContent, IonPage, IonItem, IonLabel, IonDatetime, IonInput, IonSelect, IonSelectOption } from '@ionic/react';
 import theme from './imgs/Heavy box-pana.svg';
 import '../constants/font.css';
 import '../constants/form.css';
 import { useHistory } from 'react-router';
+import { fetchDepots, fetchNatures, fetchUsers } from '../../utils/API';
 
 const Acquisition: React.FC = () => {
     const history = useHistory();
@@ -21,6 +22,14 @@ const Acquisition: React.FC = () => {
         description: ''
     });
     
+    const [natures, setNatures] = useState<string[]>([]);
+    const [depots, setDepots] = useState<string[]>([]);
+    const[users ,setUsers] = useState<string []>([])
+    useEffect(() => {
+        fetchNatures().then(natureIds => setNatures(natureIds));
+        fetchDepots().then(depotNames => setDepots(depotNames));
+        fetchUsers().then(users => setUsers(users))
+    }, []);
 
     const handleNextStep = () => {
         setStep(step + 1);
@@ -48,17 +57,17 @@ const Acquisition: React.FC = () => {
                             <IonItem>
                                 <IonLabel position="stacked">Nature ID</IonLabel>
                                 <IonSelect value={formData.natureid} onIonChange={(e) => setFormData({ ...formData, natureid: e.detail.value })}>
-                                    <IonSelectOption value="valeur1">Option 1</IonSelectOption>
-                                    <IonSelectOption value="valeur2">Option 2</IonSelectOption>
-                                    {/* Ajoutez d'autres options selon vos besoins */}
+                                    {natures.map((nature, index) => (
+                                        <IonSelectOption key={index} value={nature}>{nature}</IonSelectOption>
+                                    ))}
                                 </IonSelect>
                             </IonItem>
                             <IonItem>
                                 <IonLabel position="stacked">Dépôt</IonLabel>
                                 <IonSelect value={formData.depot} onIonChange={(e) => setFormData({ ...formData, depot: e.detail.value })}>
-                                    <IonSelectOption value="valeur1">Option 1</IonSelectOption>
-                                    <IonSelectOption value="valeur2">Option 2</IonSelectOption>
-                                    {/* Ajoutez d'autres options selon vos besoins */}
+                                    {depots.map((depot, index) => (
+                                        <IonSelectOption key={index} value={depot}>{depot}</IonSelectOption>
+                                    ))}
                                 </IonSelect>
                             </IonItem>
 
@@ -91,8 +100,8 @@ const Acquisition: React.FC = () => {
                             <IonItem>
                                 <IonLabel position="stacked">Type d'amortissement</IonLabel>
                                 <IonSelect value={formData.idtypeamortissement} onIonChange={(e) => setFormData({ ...formData, idtypeamortissement: e.detail.value })}>
-                                    <IonSelectOption value="valeur1">Option 1</IonSelectOption>
-                                    <IonSelectOption value="valeur2">Option 2</IonSelectOption>
+                                    <IonSelectOption value="lineaire">Lineaire</IonSelectOption>
+                                    <IonSelectOption value="degressif">Degressif</IonSelectOption>
                                     {/* Ajoutez d'autres options selon vos besoins */}
                                 </IonSelect>
                             </IonItem>
@@ -139,9 +148,9 @@ const Acquisition: React.FC = () => {
                             <IonItem>
                                 <IonLabel position="stacked">Utilisateur</IonLabel>
                                 <IonSelect value={formData.user} onIonChange={(e) => setFormData({ ...formData, user: e.detail.value })}>
-                                    <IonSelectOption value="valeur1">Option 1</IonSelectOption>
-                                    <IonSelectOption value="valeur2">Option 2</IonSelectOption>
-                                    {/* Ajoutez d'autres options selon vos besoins */}
+                                    {users.map((user, index) => (
+                                        <IonSelectOption key={index} value={user}>{user}</IonSelectOption>
+                                    ))}
                                 </IonSelect>
                             </IonItem>
                             <IonItem>

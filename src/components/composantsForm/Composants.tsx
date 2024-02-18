@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage, IonItem, IonLabel, IonDatetime, IonSelect, IonSelectOption } from '@ionic/react';
 import theme from './imgs/Maintenance-rafiki.svg';
 import '../constants/font.css';
 import '../constants/form.css';
 import { useHistory } from 'react-router';
+import { fetchBienAcquis, fetchNatures } from '../../utils/API';
 
 const Composants: React.FC = () => {
     const history = useHistory();
@@ -14,6 +15,30 @@ const Composants: React.FC = () => {
         datechangement: '',
         etat: ''
     });
+    const [natureFilles, setNatureFilles] = useState<any[]>([]);
+    const [bienAcquis, setBienAcquis] = useState<any[]>([]);
+    useEffect(() => {
+        const fetchNatureData = async () => {
+            try {
+                const natureData = await fetchNatures();
+                setNatureFilles(natureData);
+            } catch (error) {
+                console.error('Error fetching natures:', error);
+            }
+        };
+        const fetchBienAcquisData = async () => {
+            try {
+                const bienAcquisData = await fetchBienAcquis();
+                const materielNames = bienAcquisData.map((bien: any) => bien.bienacquisid);
+                setBienAcquis(materielNames);
+            } catch (error) {
+                console.error('Error fetching bien acquis:', error);
+            }
+        };
+
+        fetchNatureData();
+        fetchBienAcquisData();
+    }, []);
 
     const handleNextStep = () => {
         setStep(step + 1);
@@ -42,15 +67,17 @@ const Composants: React.FC = () => {
                         <IonItem>
                             <IonLabel position="stacked">Bien Acquis ID</IonLabel>
                             <IonSelect value={formData.bienacquisid} onIonChange={(e) => setFormData({ ...formData, bienacquisid: e.detail.value })}>
-                                <IonSelectOption value="ordinateur|39|2022-11-28|2183||MAHJ-G002">Ordinateur</IonSelectOption>
-                                {/* Ajoutez d'autres options selon vos besoins */}
+                                {bienAcquis.map((materiel, index) => (
+                                    <IonSelectOption key={index} value={materiel}>{materiel}</IonSelectOption>
+                                ))}
                             </IonSelect>
                         </IonItem>
                         <IonItem>
                             <IonLabel position="stacked">Nature Fille</IonLabel>
                             <IonSelect value={formData.naturefille} onIonChange={(e) => setFormData({ ...formData, naturefille: e.detail.value })}>
-                                <IonSelectOption value="clavier">Clavier</IonSelectOption>
-                                {/* Ajoutez d'autres options selon vos besoins */}
+                                {natureFilles.map((nature: any, index: number) => (
+                                    <IonSelectOption key={index} value={nature}>{nature}</IonSelectOption>
+                                ))}
                             </IonSelect>
                         </IonItem>
                         <div className="btn">

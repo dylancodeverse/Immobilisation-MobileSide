@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage, IonItem, IonLabel, IonDatetime, IonSelect, IonSelectOption } from '@ionic/react';
 import theme from './imgs/Analysis-pana.svg';
 import '../constants/font.css';
 import '../constants/form.css';
 import { useHistory } from 'react-router';
+import { fetchBienAcquis, fetchGrpUsers, fetchUsers } from '../../utils/API';
 
 const Assignation: React.FC = () => {
-    const history = useHistory()
+    const history = useHistory();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         bienacquis: '',
-        utilisateur: '',
-        grp: '',
+        utilisateur: null,
+        grp: null,
         datedebut: '',
         datefin: ''
     });
+    const [users, setUsers] = useState<string[]>([]);
+    const [grpUsers, setGrpUsers] = useState<string[]>([]);
+    const [materiels, setMateriels] = useState<string[]>([]);
+    useEffect(() => {
+        async function fetchData() {
+            const usersData = await fetchUsers();
+            const grpUsersData = await fetchGrpUsers();
+            setUsers(usersData);
+            setGrpUsers(grpUsersData);
 
-    const   handleNextStep = () => {
+            const bienAcquis = await fetchBienAcquis();
+            const materielNames = bienAcquis.map((bien: any) => bien.bienacquisid);
+            setMateriels(materielNames);
+        }
+        fetchData();
+    }, []);
+
+    const handleNextStep = () => {
         setStep(step + 1);
     };
 
@@ -26,7 +43,15 @@ const Assignation: React.FC = () => {
 
     const handleSubmit = () => {
         // Envoyer les données du formulaire
-        console.log(formData)
+        console.log(formData);
+    };
+
+    const handleUserChange = (value: string) => {
+        setFormData({ ...formData, utilisateur: value, grp: null });
+    };
+
+    const handleGrpChange = (value: string) => {
+        setFormData({ ...formData, utilisateur: null, grp: value });
     };
 
     return (
@@ -43,23 +68,29 @@ const Assignation: React.FC = () => {
                         <IonItem>
                             <IonLabel position="stacked">Materiel</IonLabel>
                             <IonSelect value={formData.bienacquis} onIonChange={(e) => setFormData({ ...formData, bienacquis: e.detail.value })}>
-                                <IonSelectOption value="ordinateur">Ordinateur</IonSelectOption>
-                                <IonSelectOption value="imprimante">Imprimante</IonSelectOption>
-                                <IonSelectOption value="scanner">Scanner</IonSelectOption>
-                                {/* Ajoutez d'autres options selon vos besoins */}
+                                {materiels.map((materiel, index) => (
+                                    <IonSelectOption key={index} value={materiel}>{materiel}</IonSelectOption>
+                                ))}
                             </IonSelect>
                         </IonItem>
                         <IonItem>
-                            <IonLabel position="stacked">Utilisateur/Grp</IonLabel>
-                            <IonSelect value={formData.utilisateur || formData.grp} onIonChange={(e) => setFormData({ ...formData, utilisateur: e.detail.value, grp: e.detail.value })}>
-                                <IonSelectOption value="utilisateur">Utilisateur</IonSelectOption>
-                                <IonSelectOption value="grp">Groupe</IonSelectOption>
+                            <IonLabel position="stacked">Utilisateur</IonLabel>
+                            <IonSelect value={formData.utilisateur} onIonChange={(e) => handleUserChange(e.detail.value)}>
+                                {users.map((user, index) => (
+                                    <IonSelectOption key={index} value={user}>{user}</IonSelectOption>
+                                ))}
                             </IonSelect>
                         </IonItem>
-                        
+                        <IonItem>
+                            <IonLabel position="stacked">Groupe</IonLabel>
+                            <IonSelect value={formData.grp} onIonChange={(e) => handleGrpChange(e.detail.value)}>
+                                {grpUsers.map((grpUser, index) => (
+                                    <IonSelectOption key={index} value={grpUser}>{grpUser}</IonSelectOption>
+                                ))}
+                            </IonSelect>
+                        </IonItem>
                         <div className="btn">
                             <button className='button' onClick={handleNextStep}> Suivant</button>
-
                         </div>
                     </div>
                 )}
@@ -77,10 +108,8 @@ const Assignation: React.FC = () => {
                             ></IonDatetime>
                         </IonItem>
                         <div className="btn">
-                            <button className='button' onClick={handlePreviousStep}> Precedant</button>
-
+                            <button className='button' onClick={handlePreviousStep}> Précédant</button>
                             <button className='button' onClick={handleNextStep}> Suivant</button>
-
                         </div>
                     </div>
                 )}
@@ -98,10 +127,8 @@ const Assignation: React.FC = () => {
                             ></IonDatetime>
                         </IonItem>
                         <div className="btn">
-                            <button className='button' onClick={handlePreviousStep}> Precedant</button>
-
+                            <button className='button' onClick={handlePreviousStep}> Précédant</button>
                             <button className='button' onClick={handleSubmit}> Valider</button>
-
                         </div>
                     </div>
                 )}
