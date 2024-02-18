@@ -1,0 +1,10 @@
+.card.ov{
+    width: 250px;
+    display: flex;
+    flex-direction:  row;
+    justify-content: space-evenly;
+}
+
+.icon-card.lst{
+    width: 33%;
+}

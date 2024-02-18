@@ -6,7 +6,7 @@ import users from './imgs/users.svg'
 import maintenance from './imgs/Maintenance-rafiki.svg'
 import list from './imgs/Task-pana.svg'
 import './cards.css'
-import { hideTabBar, showTabBar } from '../../utils/utils';
+import {  showTabBar } from '../../utils/utils';
 import { useHistory } from 'react-router';
 
 

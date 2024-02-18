@@ -1,3 +1,5 @@
+import { useHistory } from "react-router";
+
 export const hideTabBar = (): void => {
     const tabBar = document.getElementsByClassName('navtab');
   
@@ -19,3 +21,9 @@ export const showTabBar = (): void =>{
     console.log('La classe navtab n\'a pas été trouvée.');
   }
 }
+
+export const handleClick = ( param: any) => {
+  const history = useHistory()
+
+  history.push(param);
+};

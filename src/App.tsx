@@ -36,6 +36,10 @@ import './theme/variables.css';
 import Assignation from './components/assignationForm/Assignation';
 import Acquisition from './components/acquisitionForm/Acquisition';
 import Composants from './components/composantsForm/Composants';
+import BlackList from './components/blackListForm/BlackList';
+import BlackListStrict from './components/blackListForm/BlackListStrct';
+import BlackListSpec from './components/blackListForm/BlackListSpec';
+import BlackListHier from './components/blackListForm/BlackListHier';
 
 
 setupIonicReact();
@@ -65,6 +69,18 @@ const App: React.FC = () => (
           </Route>
           <Route path="/composants">
             <Composants/>
+          </Route>
+          <Route path="/blacklist">
+            <BlackList/>
+          </Route>
+          <Route path="/strict">
+            <BlackListStrict/>
+          </Route>
+          <Route path="/specifique">
+            <BlackListSpec/>
+          </Route>
+          <Route path="/hierarchique">
+            <BlackListHier/>
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom" className='navtab'>
