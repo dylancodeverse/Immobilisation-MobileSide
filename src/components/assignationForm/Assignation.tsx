@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonPage, IonItem, IonLabel, IonDatetime, IonSelect, IonSelectOption } from '@ionic/react';
+import { IonContent, IonPage, IonItem, IonLabel, IonDatetime, IonSelect, IonSelectOption, IonAlert } from '@ionic/react';
 import theme from './imgs/Analysis-pana.svg';
 import '../constants/font.css';
 import '../constants/form.css';
@@ -19,6 +19,9 @@ const Assignation: React.FC = () => {
     const [users, setUsers] = useState<string[]>([]);
     const [grpUsers, setGrpUsers] = useState<string[]>([]);
     const [materiels, setMateriels] = useState<string[]>([]);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+
     useEffect(() => {
         async function fetchData() {
             const usersData = await fetchUsers();
@@ -41,9 +44,28 @@ const Assignation: React.FC = () => {
         setStep(step - 1);
     };
 
-    const handleSubmit = () => {
-        // Envoyer les données du formulaire
-        console.log(formData);
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/assignation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la soumission des données');
+            }
+
+            setAlertMessage('Données soumises avec succès!');
+            setShowAlert(true);
+            setStep(1);
+        } catch (error) {
+            setAlertMessage('Erreur lors de la soumission des données');
+            setShowAlert(true);
+            console.error('Erreur:', error.message);
+        }
     };
 
     const handleUserChange = (value: string) => {
@@ -132,6 +154,13 @@ const Assignation: React.FC = () => {
                         </div>
                     </div>
                 )}
+                <IonAlert
+                    isOpen={showAlert}
+                    onDidDismiss={() => setShowAlert(false)}
+                    header={'Alerte'}
+                    message={alertMessage}
+                    buttons={['OK']}
+                />
             </IonContent>
         </IonPage>
     );

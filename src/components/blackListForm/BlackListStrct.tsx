@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/react';
+import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption, IonAlert } from '@ionic/react';
 import theme from './imgs/manipulation-bro.svg';
 import '../constants/font.css';
 import '../constants/form.css';
@@ -13,8 +13,10 @@ const BlackListStrict: React.FC = () => {
         user: '',
         isGrp: true
     });
-    const [users, setUsers] = useState([]);
-    const [groups, setGroups] = useState([]);
+    const [users, setUsers] = useState<string[]>([]);
+    const [groups, setGroups] = useState<string[]>([]);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,10 +37,32 @@ const BlackListStrict: React.FC = () => {
         setFormData({ user: grp, isGrp: true });
     };
 
-    const handleSubmit = () => {
-        // Envoyer les données du formulaire
-        console.log(formData);
-        // Rediriger vers une autre page si nécessaire
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/strict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la soumission des données');
+            }
+
+            const data = await response.text(); // Récupère la réponse textuelle
+            if (data === 'OK') {
+                setAlertMessage('Données soumises avec succès!');
+                setShowAlert(true);
+            } else {
+                throw new Error(data); // Lance une erreur avec le message de la réponse
+            }
+        } catch (error) {
+            setAlertMessage(error.message || 'Erreur lors de la soumission des données');
+            setShowAlert(true);
+            console.error('Erreur:', error.message);
+        }
     };
 
     return (
@@ -59,7 +83,7 @@ const BlackListStrict: React.FC = () => {
                     <IonItem>
                         <IonLabel position="stacked">Utilisateur</IonLabel>
                         <IonSelect value={formData.user} onIonChange={(e) => handleUserChange(e.detail.value)}>
-                            {users.map((user: any) => (
+                            {users.map((user: string) => (
                                 <IonSelectOption key={user} value={user}>{user}</IonSelectOption>
                             ))}
                         </IonSelect>
@@ -67,7 +91,7 @@ const BlackListStrict: React.FC = () => {
                     <IonItem>
                         <IonLabel position="stacked">Groupe</IonLabel>
                         <IonSelect value={formData.user} onIonChange={(e) => handleGrpChange(e.detail.value)}>
-                            {groups.map((group: any) => (
+                            {groups.map((group: string) => (
                                 <IonSelectOption key={group} value={group}>{group}</IonSelectOption>
                             ))}
                         </IonSelect>
@@ -76,6 +100,13 @@ const BlackListStrict: React.FC = () => {
                         <button className='button' onClick={handleSubmit}>Valider</button>
                     </div>
                 </div>
+                <IonAlert
+                    isOpen={showAlert}
+                    onDidDismiss={() => setShowAlert(false)}
+                    header={'Alert'}
+                    message={alertMessage}
+                    buttons={['OK']}
+                />
             </IonContent>
         </IonPage>
     );

@@ -10,7 +10,7 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { homeSharp,homeOutline, analyticsOutline } from 'ionicons/icons'; // Importez les icônes souhaitées
+import { homeOutline, analyticsOutline, notificationsCircleOutline, notificationsCircleSharp, notificationsCircle, notificationsSharp } from 'ionicons/icons'; // Importez les icônes souhaitées
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
@@ -40,6 +40,9 @@ import BlackList from './components/blackListForm/BlackList';
 import BlackListStrict from './components/blackListForm/BlackListStrct';
 import BlackListSpec from './components/blackListForm/BlackListSpec';
 import BlackListHier from './components/blackListForm/BlackListHier';
+import NotificationChoice from './components/notifications/notificationsChoice';
+import NotificationNonRendu from './components/notifications/notificationNonRendu';
+import NotificationMaintenance from './components/notifications/notificationMaintenance';
 
 
 setupIonicReact();
@@ -82,15 +85,29 @@ const App: React.FC = () => (
           <Route path="/hierarchique">
             <BlackListHier/>
           </Route>
+          <Route path="/notifications">
+            <NotificationChoice/>
+          </Route>
+          <Route path="/nonRendu">
+            <NotificationNonRendu/>
+          </Route>
+          <Route path="/maintenance">
+            <NotificationMaintenance/>
+          </Route>
+
         </IonRouterOutlet>
         <IonTabBar slot="bottom" className='navtab'>
           <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={homeOutline} /> {/* Utilisez homeOutline à la place de home */}
+            <IonIcon aria-hidden="true" icon={homeOutline} /> 
             <IonLabel>Home</IonLabel>
           </IonTabButton>
           <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={analyticsOutline} /> {/* Utilisez analyticsOutline à la place de square */}
+            <IonIcon aria-hidden="true" icon={analyticsOutline} /> 
             <IonLabel>Analytics</IonLabel>
+          </IonTabButton>
+          <IonTabButton tab='notifications' href="/notifications">
+          <IonIcon aria-hidden="true" icon={notificationsSharp} /> 
+            <IonLabel>Notifications</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>

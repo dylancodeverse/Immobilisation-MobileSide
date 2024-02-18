@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption, IonButton } from '@ionic/react';
+import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption, IonButton, IonAlert } from '@ionic/react';
 import '../constants/font.css';
 import '../constants/form.css';
 import './override.css';
@@ -17,6 +17,8 @@ const BlackListSpec: React.FC = () => {
     const [users, setUsers] = useState<string[]>([]);
     const [groups, setGroups] = useState<string[]>([]);
     const [bienAcquis, setBienAcquis] = useState<string[]>([]);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,8 +28,7 @@ const BlackListSpec: React.FC = () => {
                 const bienAcquisData = await fetchBienAcquis();
                 setUsers(usersData);
                 setGroups(groupsData);
-                const bienAcquis = await fetchBienAcquis();
-                const materielNames = bienAcquis.map((bien: any) => bien.bienacquisid);
+                const materielNames = bienAcquisData.map((bien: any) => bien.bienacquisid);
                 setBienAcquis(materielNames);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -48,11 +49,32 @@ const BlackListSpec: React.FC = () => {
         setFormData({ ...formData, bienacquis });
     };
 
-    const handleSubmit = () => {
-        // Envoyer les données du formulaire
-        console.log(formData);
-        // Rediriger vers une autre page si nécessaire
-        // history.push('/autre-page'); 
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/specifique', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la soumission des données');
+            }
+
+            const data = await response.text(); // Récupère la réponse textuelle
+            if (data === 'OK') {
+                setAlertMessage('Données soumises avec succès!');
+                setShowAlert(true);
+            } else {
+                throw new Error(data); // Lance une erreur avec le message de la réponse
+            }
+        } catch (error) {
+            setAlertMessage(error.message || 'Erreur lors de la soumission des données');
+            setShowAlert(true);
+            console.error('Erreur:', error.message);
+        }
     };
 
     return (
@@ -97,6 +119,13 @@ const BlackListSpec: React.FC = () => {
                         <button className='button' onClick={handleSubmit}>Valider</button>
                     </div>
                 </div>
+                <IonAlert
+                    isOpen={showAlert}
+                    onDidDismiss={() => setShowAlert(false)}
+                    header={'Alert'}
+                    message={alertMessage}
+                    buttons={['OK']}
+                />
             </IonContent>
         </IonPage>
     );

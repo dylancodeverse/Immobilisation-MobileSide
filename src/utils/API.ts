@@ -56,3 +56,23 @@ export const fetchBienAcquis = async () => {
         return [];
     }
 };
+
+export const fetchNonRendu =async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/getNonRendu');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching bien acquis:', error);
+        return [];
+    }
+}
+
+export const fetchMisANveau =async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/getAnomalie');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching bien acquis:', error);
+        return [];
+    }
+}

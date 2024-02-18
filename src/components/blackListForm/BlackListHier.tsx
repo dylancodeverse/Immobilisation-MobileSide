@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption, IonInput, IonButton } from '@ionic/react';
+import { IonContent, IonPage, IonItem, IonLabel, IonSelect, IonSelectOption, IonInput, IonButton, IonAlert } from '@ionic/react';
 import '../constants/font.css';
 import '../constants/form.css';
 import './override.css';
 import { useHistory } from 'react-router';
 import theme from './imgs/manipulation-bro.svg';
-import {  fetchNatures } from '../../utils/API';
+import { fetchNatures } from '../../utils/API';
 
 const BlackListHier: React.FC = () => {
     const history = useHistory();
@@ -14,6 +14,8 @@ const BlackListHier: React.FC = () => {
         hierarchie: 10
     });
     const [natureIDs, setNatureIDs] = useState<string[]>([]);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     useEffect(() => {
         const fetchNatureIDsData = async () => {
@@ -36,10 +38,32 @@ const BlackListHier: React.FC = () => {
         setFormData({ ...formData, hierarchie });
     };
 
-    const handleSubmit = () => {
-        // Envoyer les données du formulaire
-        console.log(formData);
-        // Rediriger vers une autre page si nécessaire
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/hierarchique', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la soumission des données');
+            }
+
+            const data = await response.text(); // Récupère la réponse textuelle
+            if (data === 'OK') {
+                setAlertMessage('Données soumises avec succès!');
+                setShowAlert(true);
+            } else {
+                throw new Error(data); // Lance une erreur avec le message de la réponse
+            }
+        } catch (error) {
+            setAlertMessage(error.message || 'Erreur lors de la soumission des données');
+            setShowAlert(true);
+            console.error('Erreur:', error.message);
+        }
     };
 
     return (
@@ -72,6 +96,13 @@ const BlackListHier: React.FC = () => {
                         <button className='button' onClick={handleSubmit}>Valider</button>
                     </div>
                 </div>
+                <IonAlert
+                    isOpen={showAlert}
+                    onDidDismiss={() => setShowAlert(false)}
+                    header={'Alert'}
+                    message={alertMessage}
+                    buttons={['OK']}
+                />
             </IonContent>
         </IonPage>
     );
