@@ -5,8 +5,9 @@ import man from  './imgs/manipulation-bro.svg'
 import './cardsoverride.css'
 import '../home/cards.css'
 import { IonContent, IonPage } from '@ionic/react';
-import { handleClick } from '../../utils/utils';
+import { UseNavigation } from '../../utils/utils';
 const BlackList: React.FC = () =>{
+    const { handleClick } = UseNavigation();
     return (
         <IonPage>
             <IonContent fullscreen> 

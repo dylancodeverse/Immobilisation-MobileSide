@@ -22,8 +22,14 @@ export const showTabBar = (): void =>{
   }
 }
 
-export const handleClick = ( param: any) => {
-  const history = useHistory()
 
-  history.push(param);
+
+export const UseNavigation = () => {
+  const history = useHistory();
+
+  const handleClick = (param: any): void => {
+    history.push(param);
+  };
+
+  return { handleClick };
 };
